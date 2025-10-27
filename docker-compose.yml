@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # Auth Service (NestJS Backend)
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: auth-builder
+    container_name: linkytics-auth-service
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    networks:
+      - linkytics-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Web Service (Next.js Frontend)
+  web-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web-builder
+    container_name: linkytics-web-service
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://auth-service:3000
+    networks:
+      - linkytics-network
+    depends_on:
+      auth-service:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nginx Reverse Proxy (Optional)
+  nginx:
+    image: nginx:alpine
+    container_name: linkytics-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - linkytics-network
+    depends_on:
+      - auth-service
+      - web-service
+    restart: unless-stopped
+
+networks:
+  linkytics-network:
+    driver: bridge
+
+volumes:
+  node_modules:
