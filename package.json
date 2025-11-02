@@ -4,10 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"pnpm --filter auth-service start:dev\" \"pnpm --filter web-service dev\"",
+    "dev:db": "docker-compose -f docker-compose.dev.yml up postgres -d",
+    "dev:db:stop": "docker-compose -f docker-compose.dev.yml stop postgres",
+    "dev:db:down": "docker-compose -f docker-compose.dev.yml down",
+    "dev:auth": "pnpm --filter auth-service start:dev",
+    "dev:web": "pnpm --filter web-service dev",
+    "dev:docker": "docker-compose -f docker-compose.dev.yml up --build",
+    "dev:docker:down": "docker-compose -f docker-compose.dev.yml down",
+    "build": "pnpm --filter auth-service build && pnpm --filter web-service build",
+    "lint": "pnpm --filter auth-service lint && pnpm --filter web-service lint"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.19.0"
+  "packageManager": "pnpm@10.19.0",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
 }

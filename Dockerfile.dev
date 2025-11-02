@@ -1,0 +1,28 @@
+# Development Dockerfile for Linkytics
+FROM node:18-alpine
+
+# Install pnpm and development tools
+RUN npm install -g pnpm@10.19.0
+RUN apk add --no-cache curl git
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files for dependency installation
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/shared-types/package.json ./packages/shared-types/
+COPY apps/auth-service/package.json ./apps/auth-service/
+COPY apps/web-service/package.json ./apps/web-service/
+
+# Install all dependencies (including dev dependencies)
+RUN pnpm install
+
+# Copy source code (volumes will override this in development)
+COPY . .
+
+# Expose ports for development
+EXPOSE 3000 3001
+
+# Default command (can be overridden in docker-compose)
+CMD ["sh", "-c", "echo 'Please specify a command in docker-compose.yml'"]
+
