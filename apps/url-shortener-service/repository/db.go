@@ -23,7 +23,10 @@ func InitDB(dsn string) {
 	}
 
 	// Auto Migrate สร้างตารางให้อัตโนมัติ
-	err = DB.AutoMigrate(&model.URL{})
+	err = DB.AutoMigrate(
+		&model.User{},
+		&model.URL{},
+	)
 	if err != nil {
 		log.Fatal("❌ สร้างตารางไม่สำเร็จ:", err)
 	}

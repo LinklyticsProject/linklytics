@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"linklytics/apps/url-shortener-service/domain/model"
-	"linklytics/apps/url-shortener-service/usecase" // 👈 เปลี่ยนมาเรียก usecase
+	"linklytics/apps/url-shortener-service/usecase"
 )
 
 const FriendBaseURL = "http://localhost:3003"
@@ -23,7 +23,13 @@ func CreateURLHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdURL, err := usecase.CreateShortURL(req.OriginalURL)
+	// ------------------------------------------------
+	// 🔥 Mock User ID: สมมติว่าเป็น User ID 1 สร้าง
+	// ------------------------------------------------
+	mockUserID := uint(1)
+
+	// ส่ง mockUserID เข้าไปในฟังก์ชัน
+	createdURL, err := usecase.CreateShortURL(req.OriginalURL, req.Title, mockUserID)
 
 	if err != nil {
 		http.Error(w, "Error creating URL: "+err.Error(), http.StatusInternalServerError)
@@ -32,8 +38,13 @@ func CreateURLHandler(w http.ResponseWriter, r *http.Request) {
 
 	// สร้าง Response
 	fullShortURL := fmt.Sprintf("%s/%s", FriendBaseURL, createdURL.ShortCode)
-	response := map[string]string{
-		"short_url": fullShortURL,
+
+	// ส่งข้อมูลกลับไปให้ครบๆ เผื่อ Frontend อยากใช้
+	response := map[string]interface{}{
+		"short_url":    fullShortURL,
+		"short_code":   createdURL.ShortCode,
+		"original_url": createdURL.OriginalURL,
+		"id":           createdURL.ID,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

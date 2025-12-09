@@ -2,19 +2,33 @@ package model
 
 import "time"
 
+// 1. ตาราง User (สร้างใหม่)
+type User struct {
+	ID uint `json:"id" gorm:"primaryKey"`
+
+	// 👇 แก้บรรทัดนี้: เติม ;size:191 เข้าไปท้าย gorm tag
+	Email string `json:"email" gorm:"uniqueIndex;not null;size:191"`
+
+	PasswordHash string    `json:"-" gorm:"not null"`
+	Role         string    `json:"role" gorm:"default:'user'"`
+	CreatedAt    time.Time `json:"created_at"`
+
+	URLs []URL `json:"urls,omitempty" gorm:"foreignKey:UserID"`
+}
+
+// 2. ตาราง URL (เพิ่ม UserID)
 type URL struct {
-	// ID ก็ควรใส่ size ด้วยครับ เพื่อความชัวร์ (Primary Key)
-	ID string `json:"id" gorm:"primaryKey;size:10"`
+	ID          string    `json:"id" gorm:"primaryKey;size:10"`
+	OriginalURL string    `json:"original_url" gorm:"not null"`
+	ShortCode   string    `json:"short_code" gorm:"uniqueIndex;not null;size:20"`
+	Title       string    `json:"title" gorm:"size:255"`
+	CreatedAt   time.Time `json:"created_at"`
 
-	// OriginalURL ปล่อยเป็น Text ได้ เพราะไม่ได้ทำ Index ห้ามซ้ำ
-	OriginalURL string `json:"original_url" gorm:"not null"`
-
-	// MySQL จะได้สร้างเป็น VARCHAR(20) แทน LONGTEXT
-	ShortCode string `json:"short_code" gorm:"uniqueIndex;not null;size:20"`
-
-	CreatedAt time.Time `json:"created_at"`
+	// Foreign Key เชื่อมไปหา User
+	UserID uint `json:"user_id"`
 }
 
 type CreateURLRequest struct {
 	OriginalURL string `json:"original_url"`
+	Title       string `json:"title"`
 }

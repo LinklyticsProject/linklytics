@@ -8,45 +8,42 @@ import (
 	"linklytics/apps/url-shortener-service/repository" // เรียกใช้ Repository
 )
 
-func CreateShortURL(originalURL string) (*model.URL, error) {
+func CreateShortURL(originalURL string, title string, userID uint) (*model.URL, error) {
 
-	// ---------------------------------------------------------
-	// Loop 1: สุ่ม ID จนกว่าจะไม่ซ้ำ (Collision Check for ID)
-	// ---------------------------------------------------------
+	// Loop 1: สุ่ม ID (เหมือนเดิม)
 	var newID string
 	for {
 		newID = generateRandomString(5)
 		if repository.IsIDAvailable(newID) {
-			break // เจอว่างแล้ว! ออกจากลูปได้
+			break
 		}
-		// ถ้าซ้ำ ลูปจะวนไปสุ่มใหม่เอง
 	}
 
-	// ---------------------------------------------------------
-	// Loop 2: สุ่ม ShortCode จนกว่าจะไม่ซ้ำ
-	// ---------------------------------------------------------
+	// Loop 2: สุ่ม ShortCode (เหมือนเดิม)
 	var shortCode string
 	for {
 		shortCode = generateRandomString(6)
 		if repository.IsShortCodeAvailable(shortCode) {
-			break // เจอว่างแล้ว! ออกจากลูปได้
+			break
 		}
 	}
 
-	// 3. เตรียมข้อมูลบันทึก (ตอนนี้มั่นใจแล้วว่าทั้ง ID และ ShortCode ไม่ซ้ำแน่นอน)
+	// 3. เตรียมข้อมูลบันทึก
 	newURL := model.URL{
 		ID:          newID,
 		OriginalURL: originalURL,
 		ShortCode:   shortCode,
+		Title:       title,
 		CreatedAt:   time.Now(),
+		UserID:      userID,
 	}
 
 	err := repository.CreateURL(&newURL)
 	if err != nil {
 		return nil, err
 	}
-	// เก็บไว้นาน 7 วัน (7 * 24 ชั่วโมง)
-	// ถ้า Redis ล่ม เราแค่อยากให้แจ้งเตือนแต่ไม่ต้องถึงกับ Error ใส่ User ก็ได้ (Optional)
+
+	// Save Redis (เหมือนเดิม)
 	_ = repository.SaveToCache(shortCode, originalURL, 7*24*time.Hour)
 
 	return &newURL, nil

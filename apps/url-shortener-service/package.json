@@ -1,0 +1,7 @@
+{
+    "name": "url-shortener-service",
+    "version": "1.0.0",
+    "scripts": {
+      "dev": "go run ."
+    }
+  }
