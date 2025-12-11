@@ -35,6 +35,7 @@ func CreateShortURL(originalURL string, title string, userID uint) (*model.URL, 
 		ShortCode:   shortCode,
 		Title:       title,
 		CreatedAt:   time.Now(),
+		Clicks:      0, // เริ่มต้นที่ 0
 		UserID:      userID,
 	}
 

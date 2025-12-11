@@ -45,6 +45,9 @@ func CreateURLHandler(w http.ResponseWriter, r *http.Request) {
 		"short_code":   createdURL.ShortCode,
 		"original_url": createdURL.OriginalURL,
 		"id":           createdURL.ID,
+		"clicks":       createdURL.Clicks,
+		"created_at":   createdURL.CreatedAt,
+		"last_click":   createdURL.LastClick, // nil ถ้ายังไม่เคยคลิก
 	}
 
 	w.Header().Set("Content-Type", "application/json")

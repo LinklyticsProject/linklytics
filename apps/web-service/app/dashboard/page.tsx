@@ -1,109 +1,42 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { LinkIcon, Copy, Trash2, BarChart3, ExternalLink } from "lucide-react"
 import NextLink from "next/link"
-
-// ✅ Config: ชี้ไปที่ Backend Go Port 8080
-const API_BASE_URL = "http://localhost:8080"
-
-interface LinkItem {
-  id: string;
-  originalUrl: string;
-  shortCode: string;
-  title?: string;
-  createdAt: string;
-  clicks: number;
-}
+import { useShortLink } from "@/hooks/useShortLink"
 
 export default function DashboardPage() {
   const [url, setUrl] = useState("")
   const [title, setTitle] = useState("")
-  const [links, setLinks] = useState<LinkItem[]>([]) 
-  const [isCreating, setIsCreating] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
-  // 1. โหลดข้อมูลเมื่อเข้าเว็บ (Method: GET)
-  useEffect(() => {
-    fetchLinks()
-  }, [])
-
-  const fetchLinks = async () => {
-    try {
-      // ✅ GET: http://localhost:8080/api/urls
-      const res = await fetch(`${API_BASE_URL}/api/urls`)
-      
-      if (!res.ok) throw new Error("Failed to fetch")
-      
-      const data = await res.json()
-      
-      // แปลงข้อมูลจาก Go (Snake Case) -> Frontend (Camel Case)
-      const mappedLinks = data.map((item: any) => ({
-        id: item.id,
-        originalUrl: item.original_url,
-        shortCode: item.short_code,
-        title: item.title,
-        createdAt: item.created_at,
-        clicks: 0 
-      }))
-      
-      setLinks(mappedLinks)
-    } catch (error) {
-      console.error("Error loading links:", error)
-    }
-  }
+  // ✅ ใช้ Custom Hook แทนการเขียน logic เอง
+  const { links, createLink, deleteLink, isLoading, error } = useShortLink()
 
   const handleCreateLink = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsCreating(true)
 
     try {
-      // ✅ POST: http://localhost:8080/api/urls (URL เดิมแต่เปลี่ยน Method)
-      const res = await fetch(`${API_BASE_URL}/api/urls`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          original_url: url,
-          title: title
-        }),
-      })
-
-      if (!res.ok) {
-        throw new Error("Failed to create link")
-      }
-
-      const newLinkData = await res.json()
-
-      const newLink: LinkItem = {
-        id: newLinkData.id,
-        originalUrl: newLinkData.original_url,
-        shortCode: newLinkData.short_code,
-        title: title || undefined,
-        createdAt: new Date().toISOString(),
-        clicks: 0,
-      }
-
-      setLinks([newLink, ...links])
+      await createLink(url, title)
+      
+      // ล้างฟอร์มเมื่อสร้างสำเร็จ
       setUrl("")
       setTitle("")
       
     } catch (error) {
       alert("Error creating link. Please try again.")
       console.error(error)
-    } finally {
-      setIsCreating(false)
     }
   }
 
   const handleCopy = (shortCode: string, linkId: string) => {
-    // เวลา copy link จะใช้ domain ของ Backend
-    const shortUrl = `${API_BASE_URL}/${shortCode}` 
+    // ใช้ window.location.origin หรือกำหนด base URL ตายตัว
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
+    const shortUrl = `${baseUrl}/${shortCode}` 
     navigator.clipboard.writeText(shortUrl)
     setCopiedId(linkId)
     setTimeout(() => setCopiedId(null), 2000)
@@ -111,8 +44,8 @@ export default function DashboardPage() {
 
   const handleDelete = async (linkId: string) => {
     if (confirm("Are you sure you want to delete this link?")) {
-      // TODO: อย่าลืมทำ API Delete ที่ Backend ด้วยนะครับ (เช่น DELETE /api/urls?id=xxx)
-      setLinks(links.filter((link) => link.id !== linkId))
+      deleteLink(linkId)
+      // TODO: อย่าลืมทำ API Delete ที่ Backend + Service ด้วยนะครับ
     }
   }
 
@@ -138,6 +71,13 @@ export default function DashboardPage() {
       </header>
 
       <main className="container mx-auto px-6 py-8 max-w-5xl">
+        {/* แสดง Error ถ้ามี */}
+        {error && (
+          <div className="mb-4 p-4 bg-destructive/10 border border-destructive/50 rounded-lg text-destructive">
+            <p className="text-sm font-medium">Error: {error}</p>
+          </div>
+        )}
+
         {/* Create Link Form */}
         <Card className="p-6 mb-8 bg-card border-border">
           <h2 className="text-2xl font-bold text-foreground mb-4">Create Short Link</h2>
@@ -169,8 +109,8 @@ export default function DashboardPage() {
                 className="bg-secondary border-border"
               />
             </div>
-            <Button type="submit" disabled={isCreating} className="w-full sm:w-auto">
-              {isCreating ? "Creating..." : "Create Short Link"}
+            <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
+              {isLoading ? "Creating..." : "Create Short Link"}
             </Button>
           </form>
         </Card>
@@ -182,7 +122,12 @@ export default function DashboardPage() {
             <span className="text-sm text-muted-foreground">{links.length} total</span>
           </div>
 
-          {links.length === 0 ? (
+          {isLoading && links.length === 0 ? (
+            <Card className="p-12 text-center bg-card border-border">
+              <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+              <p className="text-muted-foreground">Loading your links...</p>
+            </Card>
+          ) : links.length === 0 ? (
             <Card className="p-12 text-center bg-card border-border">
               <LinkIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">No links yet. Create your first short link above!</p>
@@ -196,7 +141,7 @@ export default function DashboardPage() {
                       {link.title && <h3 className="font-semibold text-foreground mb-1">{link.title}</h3>}
                       <div className="flex items-center gap-2 mb-2">
                         <code className="text-sm font-mono text-primary bg-primary/10 px-2 py-1 rounded">
-                          {API_BASE_URL}/{link.shortCode}
+                          {process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/{link.shortCode}
                         </code>
                         <Button
                           variant="ghost"
