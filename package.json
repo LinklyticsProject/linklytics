@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"pnpm --filter auth-service start:dev\" \"pnpm --filter web-service dev\"",
+    "dev": "concurrently \"pnpm --filter auth-service start:dev\" \"pnpm --filter web-service dev\" \"pnpm --filter url-shortener-service dev\"",
     "dev:db": "docker-compose -f docker-compose.dev.yml up postgres -d",
     "dev:db:stop": "docker-compose -f docker-compose.dev.yml stop postgres",
     "dev:db:down": "docker-compose -f docker-compose.dev.yml down",
