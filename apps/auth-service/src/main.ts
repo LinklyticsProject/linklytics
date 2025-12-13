@@ -10,6 +10,14 @@ async function bootstrap(): Promise<void> {
 
   const configuration = app.get(ConfigService);
 
+  // Enable CORS
+  app.enableCors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
   const config = new DocumentBuilder()
     .setTitle('Auth Service')
     .setDescription('Auth endpoints')
