@@ -22,58 +22,56 @@ services:
     restart: unless-stopped
 
   # Auth Service (NestJS Backend) - Development
-  auth-service:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    container_name: linkytics-auth-service-dev
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
-      - PORT=3000
-      - DATABASE_HOST=postgres
-      - DATABASE_PORT=5432
-      - DATABASE_USER=linkytics
-      - DATABASE_PASSWORD=linkytics_dev_password
-      - DATABASE_NAME=auth_db
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/apps/auth-service/node_modules
-      - /app/apps/web-service/node_modules
-      - /app/packages/shared-types/node_modules
-    networks:
-      - linkytics-dev-network
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-    command: sh -c "cd apps/auth-service && pnpm run start:dev"
+  # auth-service:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   container_name: linkytics-auth-service-dev
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - PORT=3000
+  #     - DATABASE_HOST=postgres
+  #     - DATABASE_PORT=5432
+  #     - DATABASE_USER=linkytics
+  #     - DATABASE_PASSWORD=linkytics_dev_password
+  #     - DATABASE_NAME=auth_db
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #     - /app/apps/auth-service/node_modules
+#     - /app/apps/web-service/node_modules
+  #   networks:
+  #     - linkytics-dev-network
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   restart: unless-stopped
+  #   command: sh -c "cd apps/auth-service && pnpm run start:dev"
 
   # Web Service (Next.js Frontend) - Development
-  web-service:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    container_name: linkytics-web-service-dev
-    ports:
-      - "3001:3000"
-    environment:
-      - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://localhost:3000
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/apps/auth-service/node_modules
-      - /app/apps/web-service/node_modules
-      - /app/packages/shared-types/node_modules
-    networks:
-      - linkytics-dev-network
-    depends_on:
-      - auth-service
-    restart: unless-stopped
-    command: sh -c "cd apps/web-service && pnpm run dev"
+  # web-service:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   container_name: linkytics-web-service-dev
+  #   ports:
+  #     - "3001:3000"
+  #   environment:
+  #     - NODE_ENV=development
+  #     - NEXT_PUBLIC_API_URL=http://localhost:3000
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #     - /app/apps/auth-service/node_modules
+#     - /app/apps/web-service/node_modules
+  #   networks:
+  #     - linkytics-dev-network
+  #   depends_on:
+  #     - auth-service
+  #   restart: unless-stopped
+  #   command: sh -c "cd apps/web-service && pnpm run dev"
 
 networks:
   linkytics-dev-network:
