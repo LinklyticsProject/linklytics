@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import type React from "react"
 import { useState } from "react"
@@ -31,7 +31,7 @@ export default function DashboardPage() {
       alert("Error creating link. Please try again.")
       console.error(error)
     }
-  }
+  };
 
   const handleCopy = (shortCode: string, linkId: string) => {
     // ใช้ window.location.origin หรือกำหนด base URL ตายตัว
@@ -47,7 +47,7 @@ export default function DashboardPage() {
       deleteLink(linkId)
       // TODO: อย่าลืมทำ API Delete ที่ Backend + Service ด้วยนะครับ
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -80,10 +80,15 @@ export default function DashboardPage() {
 
         {/* Create Link Form */}
         <Card className="p-6 mb-8 bg-card border-border">
-          <h2 className="text-2xl font-bold text-foreground mb-4">Create Short Link</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">
+            Create Short Link
+          </h2>
           <form onSubmit={handleCreateLink} className="space-y-4">
             <div>
-              <label htmlFor="url" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="url"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Destination URL
               </label>
               <Input
@@ -97,7 +102,10 @@ export default function DashboardPage() {
               />
             </div>
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Title (optional)
               </label>
               <Input
@@ -119,7 +127,9 @@ export default function DashboardPage() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold text-foreground">Your Links</h2>
-            <span className="text-sm text-muted-foreground">{links.length} total</span>
+            <span className="text-sm text-muted-foreground">
+              {links.length} total
+            </span>
           </div>
 
           {isLoading && links.length === 0 ? (
@@ -130,15 +140,24 @@ export default function DashboardPage() {
           ) : links.length === 0 ? (
             <Card className="p-12 text-center bg-card border-border">
               <LinkIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">No links yet. Create your first short link above!</p>
+              <p className="text-muted-foreground">
+                No links yet. Create your first short link above!
+              </p>
             </Card>
           ) : (
             <div className="space-y-3">
               {links.map((link) => (
-                <Card key={link.id} className="p-4 bg-card border-border hover:border-primary/50 transition-colors">
+                <Card
+                  key={link.id}
+                  className="p-4 bg-card border-border hover:border-primary/50 transition-colors"
+                >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
-                      {link.title && <h3 className="font-semibold text-foreground mb-1">{link.title}</h3>}
+                      {link.title && (
+                        <h3 className="font-semibold text-foreground mb-1">
+                          {link.title}
+                        </h3>
+                      )}
                       <div className="flex items-center gap-2 mb-2">
                         <code className="text-sm font-mono text-primary bg-primary/10 px-2 py-1 rounded">
                           {process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/{link.shortCode}
@@ -150,7 +169,9 @@ export default function DashboardPage() {
                           className="h-7 px-2"
                         >
                           <Copy className="w-3 h-3" />
-                          {copiedId === link.id && <span className="ml-1 text-xs">Copied!</span>}
+                          {copiedId === link.id && (
+                            <span className="ml-1 text-xs">Copied!</span>
+                          )}
                         </Button>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -159,7 +180,10 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                         <span>{link.clicks} clicks</span>
-                        <span>Created {new Date(link.createdAt).toLocaleDateString()}</span>
+                        <span>
+                          Created{" "}
+                          {new Date(link.createdAt).toLocaleDateString()}
+                        </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -168,7 +192,11 @@ export default function DashboardPage() {
                           <BarChart3 className="w-4 h-4" />
                         </Button>
                       </NextLink>
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(link.id)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(link.id)}
+                      >
                         <Trash2 className="w-4 h-4 text-destructive" />
                       </Button>
                     </div>
@@ -180,5 +208,5 @@ export default function DashboardPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

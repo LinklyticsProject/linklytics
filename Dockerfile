@@ -9,7 +9,6 @@ WORKDIR /app
 
 # Copy package files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY packages/shared-types/package.json ./packages/shared-types/
 COPY apps/auth-service/package.json ./apps/auth-service/
 COPY apps/web-service/package.json ./apps/web-service/
 
@@ -44,7 +43,6 @@ WORKDIR /app
 
 # Copy package files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY packages/shared-types/package.json ./packages/shared-types/
 COPY apps/auth-service/package.json ./apps/auth-service/
 COPY apps/web-service/package.json ./apps/web-service/
 
@@ -58,8 +56,6 @@ COPY --from=web-builder /app/apps/web-service/public ./apps/web-service/public
 COPY --from=web-builder /app/apps/web-service/package.json ./apps/web-service/package.json
 
 # Copy shared types
-COPY packages/shared-types ./packages/shared-types
-
 # Create startup script
 RUN echo '#!/bin/sh\n\
 cd /app/apps/auth-service && node dist/main.js &\n\

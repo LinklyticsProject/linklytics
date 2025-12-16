@@ -1,6 +1,6 @@
 # Linkytics
 
-A modern full-stack application built with NestJS and Next.js, featuring a microservices architecture with shared TypeScript types.
+A modern full-stack application built with NestJS and Next.js.
 
 ## 🏗️ Project Structure
 
@@ -8,7 +8,6 @@ This is a monorepo containing:
 
 - **`apps/auth-service/`** - NestJS backend service for authentication
 - **`apps/web-service/`** - Next.js frontend application
-- **`packages/shared-types/`** - Shared TypeScript types and interfaces
 
 ## 🚀 Tech Stack
 
@@ -151,10 +150,6 @@ linkytics/
 │       │   ├── page.tsx
 │       │   └── globals.css
 │       ├── public/
-│       └── package.json
-├── packages/
-│   └── shared-types/          # Shared TypeScript types
-│       ├── index.ts
 │       └── package.json
 ├── package.json
 ├── pnpm-workspace.yaml
