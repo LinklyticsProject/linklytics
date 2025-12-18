@@ -5,7 +5,7 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Prisma } from 'generated/prisma/client';
+import { Prisma } from '@prisma/client';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { LoginResponseDto } from './dto/login-response.dto';
