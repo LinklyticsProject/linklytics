@@ -145,6 +145,15 @@ jest.config.js
 # TypeScript
 tsconfig.tsbuildinfo
 
+# Generated TypeScript files (outside dist/)
+# These are build artifacts that should not be committed
+packages/**/*.js
+packages/**/*.js.map
+packages/**/*.d.ts
+apps/**/prisma.config.js
+apps/**/prisma.config.js.map
+apps/**/prisma.config.d.ts
+
 # Vercel
 .vercel
 

@@ -1,32 +1,8 @@
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card } from "@/components/ui/card"
-import { LinkIcon } from "lucide-react"
+import { Card } from "@/components/ui/card";
+import { LinkIcon } from "lucide-react";
+import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
-  const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
-
-    router.push("/dashboard")
-
-    setIsLoading(false)
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md p-8 bg-card border-border">
@@ -40,61 +16,16 @@ export default function LoginPage() {
         </div>
 
         <div className="mb-6 text-center">
-          <h2 className="text-xl font-semibold text-foreground mb-2">Welcome back</h2>
-          <p className="text-sm text-muted-foreground">Sign in to your account to continue</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-              Email
-            </label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              required
-              className="bg-secondary border-border"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
-              Password
-            </label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              className="bg-secondary border-border"
-            />
-          </div>
-
-          {error && (
-            <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20">
-              <p className="text-sm text-destructive">{error}</p>
-            </div>
-          )}
-
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign in"}
-          </Button>
-        </form>
-
-        <div className="mt-6 text-center">
+          <h2 className="text-xl font-semibold text-foreground mb-2">
+            Welcome back
+          </h2>
           <p className="text-sm text-muted-foreground">
-            {"Don't have an account? "}
-            <Link href="/register" className="text-primary hover:underline font-medium">
-              Sign up
-            </Link>
+            Sign in to your account to continue
           </p>
         </div>
+
+        <LoginForm />
       </Card>
     </div>
-  )
+  );
 }
