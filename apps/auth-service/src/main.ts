@@ -1,7 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module';
-import { PrismaService } from './database/prisma.service';
-import { PrismaModule } from './database/prisma.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 
@@ -27,9 +25,6 @@ async function bootstrap(): Promise<void> {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-
-  const prismaService = app.select(PrismaModule).get(PrismaService);
-  prismaService.enableShutdownHooks(app);
 
   await app.listen(configuration.get('PORT') ?? 3001);
 }
